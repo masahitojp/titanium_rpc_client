@@ -1,0 +1,7 @@
+dist
+.settings
+*~
+*.diff
+*.patch
+/*.html
+.DS_Store
