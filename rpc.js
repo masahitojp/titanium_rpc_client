@@ -85,7 +85,7 @@ rpc.ServiceProxy = function(serviceURL, options){
 	
 	//Determine if accessing the server would violate the same origin policy
 	this.__isCrossSite = false;
-/*
+    if(!Titanium){
 	var urlParts = this.__serviceURL.match(/^(\w+:)\/\/([^\/]+?)(?::(\d+))?(?:$|\/)/);
 	if(urlParts){
 		this.__isCrossSite = (
@@ -94,7 +94,8 @@ rpc.ServiceProxy = function(serviceURL, options){
 			location.port     != (urlParts[3] || "")
 		);
 	}
-*/
+    }
+
 	//Set other default options
 	var providedMethodList;
 	this.__isAsynchronous = true;
@@ -311,10 +312,14 @@ rpc.ServiceProxy.prototype.__callMethod = function(methodName, params, successHa
 			}
 			
 			//XMLHttpRequest chosen (over Ajax.Request) because it propogates uncaught exceptions
-			var xhr = Titanium.Network.createHTTPClient(); //Set Titaium HTTPClient Object
-/*
-			if(window.XMLHttpRequest)
+			var xhr;
+            if(Titanium.Network.createHTTPClient){
+                //Set Titaium HTTPClient Object
+                xhr = Titanium.Network.createHTTPClient();
+            }
+			else if(window.XMLHttpRequest){
 				xhr = new XMLHttpRequest();
+            }
 			else if(window.ActiveXObject){
 				try {
 					xhr = new ActiveXObject('Msxml2.XMLHTTP');
@@ -322,7 +327,7 @@ rpc.ServiceProxy.prototype.__callMethod = function(methodName, params, successHa
 					xhr = new ActiveXObject('Microsoft.XMLHTTP');
 				}
 			}
-*/
+
 			xhr.open('POST', this.__serviceURL, this.__isAsynchronous, this.__authUsername, this.__authPassword);
 			if(this.__protocol == 'XML-RPC'){
 				xhr.setRequestHeader('Content-Type', 'text/xml');
